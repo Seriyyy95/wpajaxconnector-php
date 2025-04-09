@@ -1,0 +1,30 @@
+{
+    "name": "seriyyy95/wpajaxconnector-php",
+    "description": "Library for work with wpajaxconnector plugin",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.4|^7.4|^7.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "WPAjaxConnector\\WPAjaxConnectorPHP\\": "src/",
+            "Tests\\": "tests/"
+        },
+        "files": ["bootstrap.php"]
+    },
+    "license": "LGPL",
+    "authors": [{
+        "name": "Seriyyy95",
+        "email": "Seriyyy95@gmail.com"
+    }],
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "8.5.x-dev"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+            ]
+        }
+    }
+}
