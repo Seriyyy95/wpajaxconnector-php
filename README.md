@@ -1,10 +1,14 @@
 ## WPAjaxConnector-PHP
 
-This package can be used to interact with wpajaxconnector-plugin using PHP. 
-It implements all methods that the plugin supports. To install the package first add the repository to your `composer.json`:
+This package can be used to interact with wpajaxconnector-plugin using PHP.
+It implements all methods that the plugin supports.
+To install the package first add the repository to your `composer.json` in the `repositories` section:
 
 ```json
-
+{
+    "type": "vcs",
+    "url": "https://github.com/Seriyyy95/wpajaxconnector-php.git"
+}
 ```
 
 Then use run the following composer command:
