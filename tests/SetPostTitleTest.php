@@ -13,12 +13,12 @@ class SetPostTitleTest extends TestCase
 {
     public function testSetPostTitleWorks(): void
     {
-        $successBody = file_get_contents(__DIR__ . '/fixtures/set_post_title.json');
+        $successBody = file_get_contents(__DIR__.'/fixtures/set_post_title.json');
         $mock = new MockHandler([
             new Response(200, [], $successBody),
         ]);
 
-        $wpConnector = new WPConnector("", "");
+        $wpConnector = new WPConnector('', '');
         $wpConnector->setMockHandler($mock);
 
         $result = $wpConnector->setPostTitle(123, 'Test Post Title');

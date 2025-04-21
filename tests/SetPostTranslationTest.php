@@ -13,12 +13,12 @@ class SetPostTranslationTest extends TestCase
 {
     public function testSetPostTranslationWorks(): void
     {
-        $successBody = file_get_contents(__DIR__ . '/fixtures/set_post_translation.json');
+        $successBody = file_get_contents(__DIR__.'/fixtures/set_post_translation.json');
         $mock = new MockHandler([
             new Response(200, [], $successBody),
         ]);
 
-        $wpConnector = new WPConnector("", "");
+        $wpConnector = new WPConnector('', '');
         $wpConnector->setMockHandler($mock);
 
         $result = $wpConnector->setTranslation(123, 'es', 456);

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests;
 
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use WPAjaxConnector\WPAjaxConnectorPHP\WPConnector;
@@ -14,12 +13,12 @@ class UpdateAttachmentTest extends TestCase
 {
     public function testUpdateAttachmentWorks(): void
     {
-        $successBody = file_get_contents(__DIR__ . '/fixtures/update_attachment.json');
+        $successBody = file_get_contents(__DIR__.'/fixtures/update_attachment.json');
         $mock = new MockHandler([
             new Response(200, [], $successBody),
         ]);
 
-        $wpConnector = new WPConnector("", "");
+        $wpConnector = new WPConnector('', '');
         $wpConnector->setMockHandler($mock);
 
         $result = $wpConnector->updateAttachment('test.png', 'data...', 123);
@@ -29,7 +28,7 @@ class UpdateAttachmentTest extends TestCase
         $this->assertNotNull($result->filesize);
         $this->assertNotNull($result->largeUrl);
         $this->assertNotNull($result->thumbnailUrl);
-        
+
         // Verify property types
         $this->assertIsInt($result->attachmentId);
         $this->assertIsString($result->attachmentUrl);
@@ -37,4 +36,4 @@ class UpdateAttachmentTest extends TestCase
         $this->assertIsString($result->largeUrl);
         $this->assertIsString($result->thumbnailUrl);
     }
-} 
+}

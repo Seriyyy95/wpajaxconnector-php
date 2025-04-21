@@ -13,12 +13,12 @@ class GetAttachmentTest extends TestCase
 {
     public function testGetAttachmentWorks(): void
     {
-        $successBody = file_get_contents(__DIR__ . '/fixtures/get_attachment.json');
+        $successBody = file_get_contents(__DIR__.'/fixtures/get_attachment.json');
         $mock = new MockHandler([
             new Response(200, [], $successBody),
         ]);
 
-        $wpConnector = new WPConnector("", "");
+        $wpConnector = new WPConnector('', '');
         $wpConnector->setMockHandler($mock);
 
         $result = $wpConnector->getAttachment(123);
@@ -29,4 +29,4 @@ class GetAttachmentTest extends TestCase
         $this->assertNotNull($result->largeUrl);
         $this->assertNotNull($result->thumbnailUrl);
     }
-} 
+}

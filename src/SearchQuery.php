@@ -17,7 +17,7 @@ class SearchQuery implements SearchQueryInterface
 
     private int $page = 1;
 
-    private int|null $parentPostId = null;
+    private ?int $parentPostId = null;
 
     private int $countPosts = -1; // Всё
 
@@ -25,13 +25,13 @@ class SearchQuery implements SearchQueryInterface
 
     private string $sortField = 'relevance';
 
-    private DateTime|null $startDate = null;
+    private ?DateTime $startDate = null;
 
-    private DateTime|null $endDate = null;
+    private ?DateTime $endDate = null;
 
-    private string|null $type = null;
+    private ?string $type = null;
 
-    private string|null $searchMetaField = null;
+    private ?string $searchMetaField = null;
 
     private string $searchMetaValue = '';
 
@@ -61,10 +61,10 @@ class SearchQuery implements SearchQueryInterface
 
     public function orderBy(string $field, string $order = 'desc'): self
     {
-        if (!in_array($field, $this->sortFieldValues)) {
-            throw new WPConnectorException("Unexpected sort field value $field, expecting: " . implode(', ', $this->sortFieldValues));
+        if (! in_array($field, $this->sortFieldValues)) {
+            throw new WPConnectorException("Unexpected sort field value $field, expecting: ".implode(', ', $this->sortFieldValues));
         }
-        if (!in_array($order, ['asc', 'desc'])) {
+        if (! in_array($order, ['asc', 'desc'])) {
             throw new WPConnectorException("Unexpected sort order value $order, expecting: asc, desc");
         }
         $this->sortField = $field;

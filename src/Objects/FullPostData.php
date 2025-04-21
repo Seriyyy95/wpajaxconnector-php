@@ -16,17 +16,17 @@ class FullPostData
 
     public string $content;
 
-    public string|null $url;
+    public ?string $url;
 
-    public int|null $parentId;
+    public ?int $parentId;
 
     public string $type;
 
     public string $mimeType;
 
-    public DateTime|null $publishedAt;
+    public ?DateTime $publishedAt;
 
-    public DateTime|null $modifiedAt;
+    public ?DateTime $modifiedAt;
 
     public string $category;
 

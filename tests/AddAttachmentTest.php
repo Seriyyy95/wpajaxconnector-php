@@ -13,12 +13,12 @@ class AddAttachmentTest extends TestCase
 {
     public function testIsAccessibleWorks(): void
     {
-        $successBody = file_get_contents(__DIR__ . '/fixtures/add_attachment.json');
+        $successBody = file_get_contents(__DIR__.'/fixtures/add_attachment.json');
         $mock = new MockHandler([
             new Response(200, [], $successBody),
         ]);
 
-        $wpConnector = new WPConnector("", "");
+        $wpConnector = new WPConnector('', '');
         $wpConnector->setMockHandler($mock);
 
         $result = $wpConnector->addAttachment('test.png', 'data...');

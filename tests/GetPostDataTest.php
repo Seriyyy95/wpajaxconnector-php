@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests;
 
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use WPAjaxConnector\WPAjaxConnectorPHP\WPConnector;
@@ -14,12 +13,12 @@ class GetPostDataTest extends TestCase
 {
     public function testGetPostDataWorks(): void
     {
-        $successBody = file_get_contents(__DIR__ . '/fixtures/get_post_data.json');
+        $successBody = file_get_contents(__DIR__.'/fixtures/get_post_data.json');
         $mock = new MockHandler([
             new Response(200, [], $successBody),
         ]);
 
-        $wpConnector = new WPConnector("", "");
+        $wpConnector = new WPConnector('', '');
         $wpConnector->setMockHandler($mock);
 
         $result = $wpConnector->getPost(123);
@@ -38,4 +37,4 @@ class GetPostDataTest extends TestCase
         $this->assertIsArray($result->tags);
         $this->assertNotNull($result->author);
     }
-} 
+}

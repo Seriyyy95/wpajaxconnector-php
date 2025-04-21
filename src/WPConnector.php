@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WPAjaxConnector\WPAjaxConnectorPHP;
 
+use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\Handler\MockHandler;
@@ -20,7 +21,7 @@ class WPConnector implements WPConnectorInterface
 
     private string $accessKey;
 
-    private MockHandler|null $mock = null;
+    private ?MockHandler $mock = null;
 
     public function __construct($domain, $accessKey)
     {
@@ -75,8 +76,8 @@ class WPConnector implements WPConnectorInterface
         $postData->type = $result['post_type'];
         $postData->mimeType = $result['post_mime_type'];
         $postData->parentId = $result['post_parent'];
-        $postData->publishedAt = $result['publish_date'] != null ? new \DateTime($result['publish_date']) : null;
-        $postData->modifiedAt = $result['last_modified'] != null ? new \DateTime($result['last_modified']) : null;
+        $postData->publishedAt = $result['publish_date'] != null ? new DateTime($result['publish_date']) : null;
+        $postData->modifiedAt = $result['last_modified'] != null ? new DateTime($result['last_modified']) : null;
         $postData->url = $result['post_url'];
         $postData->category = $result['category_name'] ?? '';
         $postData->tags = $result['tags'];
@@ -176,7 +177,7 @@ class WPConnector implements WPConnectorInterface
         return $result['blocks'];
     }
 
-    public function getPostMeta(int $postId, string $key): string|null
+    public function getPostMeta(int $postId, string $key): ?string
     {
         $params = [
             'post_id' => $postId,
@@ -200,7 +201,7 @@ class WPConnector implements WPConnectorInterface
         return intval($result['post_id']);
     }
 
-    public function addAttachment(string $imageName, string $imageData, int|null $post_id = null): AttachmentData
+    public function addAttachment(string $imageName, string $imageData, ?int $post_id = null): AttachmentData
     {
         $params = [
             'attachment_name' => $imageName,
@@ -251,7 +252,7 @@ class WPConnector implements WPConnectorInterface
 
         $result = $this->makeRequest('add_post', $params, 'data', 'POST');
 
-        $postData = new PostData();
+        $postData = new PostData;
         $postData->id = $result['post_id'];
         $postData->url = $result['url'];
         $postData->title = $result['title'];
@@ -339,24 +340,23 @@ class WPConnector implements WPConnectorInterface
     }
 
     private function makeRequest(
-        string  $action,
-        array   $params = [],
+        string $action,
+        array $params = [],
         ?string $dataField = 'data',
-        string  $method = 'GET'
-    )
-    {
+        string $method = 'GET'
+    ) {
         $uri = sprintf('%s/wp-admin/admin-ajax.php', $this->domain);
 
-        if (null !== $this->mock) {
+        if ($this->mock !== null) {
             $handlerStack = HandlerStack::create($this->mock);
         } else {
-            $handlerStack = HandlerStack::create(new CurlHandler());
+            $handlerStack = HandlerStack::create(new CurlHandler);
         }
 
         $client = new Client([
             'base_uri' => $uri,
             'timeout' => 60,
-            'handler' => $handlerStack
+            'handler' => $handlerStack,
         ]);
 
         $params['action'] = $action;
@@ -383,10 +383,10 @@ class WPConnector implements WPConnectorInterface
             $response = $e->getResponse();
             $responseString = $response->getBody()->getContents();
 
-            throw new WPConnectorException('Http client returns error: ' . $responseString . ' for action: ' . $action);
+            throw new WPConnectorException('Http client returns error: '.$responseString.' for action: '.$action);
         }
 
-        $jsonString = (string)$httpResponse->getBody()->getContents();
+        $jsonString = (string) $httpResponse->getBody()->getContents();
         if (strlen($jsonString) == 0) {
             throw new WPConnectorException('Wordpress has returned empty result, please check wordpress debug logs for errors');
         }
@@ -395,19 +395,19 @@ class WPConnector implements WPConnectorInterface
         if ($post === null && str_contains($jsonString, '404')) {
             throw new WPConnectorException('Wordpress does not have enough resources to evaluate request!');
         } elseif ($post === null) {
-            throw new WPConnectorException("Can't decode json response: " . json_last_error_msg() . ', ' . print_r($jsonString, true) . ', ' . print_r([$action, $params, $uri], true));
+            throw new WPConnectorException("Can't decode json response: ".json_last_error_msg().', '.print_r($jsonString, true).', '.print_r([$action, $params, $uri], true));
         }
 
         if ($dataField != null) {
             if (isset($post[$dataField])) {
                 return $post[$dataField];
             } elseif (isset($post['error'])) {
-                throw new WPConnectorException('The WPConnector plugin has returned an error: ' . $post['error']);
+                throw new WPConnectorException('The WPConnector plugin has returned an error: '.$post['error']);
             }
-            throw new WPConnectorException('The WPConnector plugin has returned an unexpected data: ' . print_r($post, true));
+            throw new WPConnectorException('The WPConnector plugin has returned an unexpected data: '.print_r($post, true));
         } else {
             if (isset($post['error'])) {
-                throw new WPConnectorException('The WPConnector plugin has returned an error: ' . $post['error']);
+                throw new WPConnectorException('The WPConnector plugin has returned an error: '.$post['error']);
             }
 
             return $post;

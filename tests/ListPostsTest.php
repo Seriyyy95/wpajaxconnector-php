@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests;
 
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\PostData;
@@ -16,12 +15,12 @@ class ListPostsTest extends TestCase
 {
     public function testListPostsWorks(): void
     {
-        $successBody = file_get_contents(__DIR__ . '/fixtures/list_posts.json');
+        $successBody = file_get_contents(__DIR__.'/fixtures/list_posts.json');
         $mock = new MockHandler([
             new Response(200, [], $successBody),
         ]);
 
-        $wpConnector = new WPConnector("", "");
+        $wpConnector = new WPConnector('', '');
         $wpConnector->setMockHandler($mock);
 
         $result = $wpConnector->query()->getPosts();
