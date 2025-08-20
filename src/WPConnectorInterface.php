@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WPAjaxConnector\WPAjaxConnectorPHP;
 
+use WPAjaxConnector\WPAjaxConnectorPHP\Enum\TaxonomyType;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\AttachmentData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\FullPostData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\PostData;
@@ -44,6 +45,10 @@ interface WPConnectorInterface
 
     public function addPost(string $postTitle, string $postContent): PostData;
 
+    public function addCategory(string $categoryName, string $categorySlug): int;
+
+    public function addTag(string $tagName, string $tagSlug): int;
+
     public function setPostParent(int $postId, int $parentId): int;
 
     public function setPostThumbnail(int $postId, int $attachmentId): int;
@@ -55,4 +60,9 @@ interface WPConnectorInterface
     public function setPostTitle(int $postId, string $title): int;
 
     public function setPostCategory(int $postId, int $categoryId): int;
+
+    public function setPostTags(int $postId, array $tagIds): int;
+
+    public function setTermName(int $termId, TaxonomyType $type, string $name): int;
+    public function setTermSlug(int $termId, TaxonomyType $type, string $slug): int;
 }

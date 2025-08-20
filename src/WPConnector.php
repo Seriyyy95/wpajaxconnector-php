@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use WPAjaxConnector\WPAjaxConnectorPHP\Enum\TaxonomyType;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\AttachmentData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\FullPostData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\PostData;
@@ -214,6 +215,30 @@ class WPConnector implements WPConnectorInterface
         return AttachmentData::fromArray($result);
     }
 
+    public function addTag(string $tagName, string $tagSlug): int
+    {
+        $params = [
+            'tag_name' => $tagName,
+            'tag_slug' => $tagSlug,
+        ];
+
+        $result = $this->makeRequest('add_tag', $params, 'data', 'POST');
+
+        return $result['tag_id'];
+    }
+
+    public function addCategory(string $slug, string $name): int
+    {
+        $params = [
+            'category_name' => $name,
+            'category_slug' => $slug,
+        ];
+
+        $result = $this->makeRequest('add_category', $params, 'data', 'POST');
+
+        return $result['category_id'];
+    }
+
     public function updateAttachment(string $imageName, string $imageData, int $attachmentId): AttachmentData
     {
         $params = [
@@ -306,6 +331,17 @@ class WPConnector implements WPConnectorInterface
         return intval($result['post_id']);
     }
 
+    public function setPostTags(int $postId, array $tagNames): int
+    {
+        $params = [
+            'post_id' => $postId,
+            'tag_names' => $tagNames,
+        ];
+        $result = $this->makeRequest('set_post_tags', $params, 'data', 'POST');
+
+        return intval($result['post_id']);
+    }
+
     public function setPostMeta(int $postId, array $postMeta): int
     {
         $params = [
@@ -329,6 +365,32 @@ class WPConnector implements WPConnectorInterface
         return intval($result['post_id']);
     }
 
+    public function setTermName(int $termId,  TaxonomyType $type, string $name): int
+    {
+        $params = [
+            'term_id' => $termId,
+            'taxonomy' => $type->value,
+            'term_name' => $name,
+        ];
+
+        $result = $this->makeRequest('set_term_name', $params);
+
+        return intval($result['term_id']);
+    }
+
+    public function setTermSlug(int $termId,  TaxonomyType $type, string $slug): int
+    {
+        $params = [
+            'term_id' => $termId,
+            'taxonomy' => $type->value,
+            'term_slug' => $slug,
+        ];
+
+        $result = $this->makeRequest('set_term_slug', $params);
+
+        return intval($result['term_id']);
+    }
+
     public function makeListPostsRequest(array $params): array
     {
         return $this->makeRequest('list_posts', $params, null);
@@ -340,11 +402,12 @@ class WPConnector implements WPConnectorInterface
     }
 
     private function makeRequest(
-        string $action,
-        array $params = [],
+        string  $action,
+        array   $params = [],
         ?string $dataField = 'data',
-        string $method = 'GET'
-    ) {
+        string  $method = 'GET'
+    )
+    {
         $uri = sprintf('%s/wp-admin/admin-ajax.php', $this->domain);
 
         if ($this->mock !== null) {
@@ -383,10 +446,10 @@ class WPConnector implements WPConnectorInterface
             $response = $e->getResponse();
             $responseString = $response->getBody()->getContents();
 
-            throw new WPConnectorException('Http client returns error: '.$responseString.' for action: '.$action);
+            throw new WPConnectorException('Http client returns error: ' . $responseString . ' for action: ' . $action);
         }
 
-        $jsonString = (string) $httpResponse->getBody()->getContents();
+        $jsonString = (string)$httpResponse->getBody()->getContents();
         if (strlen($jsonString) == 0) {
             throw new WPConnectorException('Wordpress has returned empty result, please check wordpress debug logs for errors');
         }
@@ -395,19 +458,19 @@ class WPConnector implements WPConnectorInterface
         if ($post === null && str_contains($jsonString, '404')) {
             throw new WPConnectorException('Wordpress does not have enough resources to evaluate request!');
         } elseif ($post === null) {
-            throw new WPConnectorException("Can't decode json response: ".json_last_error_msg().', '.print_r($jsonString, true).', '.print_r([$action, $params, $uri], true));
+            throw new WPConnectorException("Can't decode json response: " . json_last_error_msg() . ', ' . print_r($jsonString, true) . ', ' . print_r([$action, $params, $uri], true));
         }
 
         if ($dataField != null) {
             if (isset($post[$dataField])) {
                 return $post[$dataField];
             } elseif (isset($post['error'])) {
-                throw new WPConnectorException('The WPConnector plugin has returned an error: '.$post['error']);
+                throw new WPConnectorException('The WPConnector plugin has returned an error: ' . $post['error']);
             }
-            throw new WPConnectorException('The WPConnector plugin has returned an unexpected data: '.print_r($post, true));
+            throw new WPConnectorException('The WPConnector plugin has returned an unexpected data: ' . print_r($post, true));
         } else {
             if (isset($post['error'])) {
-                throw new WPConnectorException('The WPConnector plugin has returned an error: '.$post['error']);
+                throw new WPConnectorException('The WPConnector plugin has returned an error: ' . $post['error']);
             }
 
             return $post;
