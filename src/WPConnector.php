@@ -365,7 +365,7 @@ class WPConnector implements WPConnectorInterface
         return intval($result['post_id']);
     }
 
-    public function setTermName(int $termId,  TaxonomyType $type, string $name): int
+    public function setTermName(int $termId, TaxonomyType $type, string $name): int
     {
         $params = [
             'term_id' => $termId,
@@ -378,7 +378,7 @@ class WPConnector implements WPConnectorInterface
         return intval($result['term_id']);
     }
 
-    public function setTermSlug(int $termId,  TaxonomyType $type, string $slug): int
+    public function setTermSlug(int $termId, TaxonomyType $type, string $slug): int
     {
         $params = [
             'term_id' => $termId,
@@ -389,6 +389,22 @@ class WPConnector implements WPConnectorInterface
         $result = $this->makeRequest('set_term_slug', $params);
 
         return intval($result['term_id']);
+    }
+
+
+    public function updateSitemap(string $sitemapData): bool
+    {
+        $params = [
+            'sitemap_data' => base64_encode($sitemapData),
+        ];
+
+        $result = $this->makeRequest('update_sitemap', $params, null, 'POST');
+
+        if ($result['success'] === true) {
+            return true;
+        }
+
+        return false;
     }
 
     public function makeListPostsRequest(array $params): array
