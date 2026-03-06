@@ -13,6 +13,8 @@ use WPAjaxConnector\WPAjaxConnectorPHP\Enum\TaxonomyType;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\AttachmentData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\FullPostData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\PostData;
+use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TagData;
+use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TermData;
 
 class WPConnector implements WPConnectorInterface
 {
@@ -134,6 +136,18 @@ class WPConnector implements WPConnectorInterface
         return $result['post_id'];
     }
 
+    public function setTermTranslation(int $termId, string $code, int $translationId, TaxonomyType $type): void
+    {
+        $params = [
+            'term_id' => $termId,
+            'translation_id' => $translationId,
+            'locale' => $code,
+            'type' => $type->value
+        ];
+
+        $this->makeRequest('set_term_translation', $params, 'success');
+    }
+
     public function getPostThumbnail(int $postId): AttachmentData
     {
         $params = [
@@ -143,6 +157,17 @@ class WPConnector implements WPConnectorInterface
         $result = $this->makeRequest('get_post_thumbnail', $params);
 
         return AttachmentData::fromArray($result);
+    }
+
+    public function getTermData(int $termId): TermData
+    {
+        $params = [
+            'term_id' => $termId,
+        ];
+
+        $result = $this->makeRequest('get_term_data', $params);
+
+        return TermData::fromArray($result);
     }
 
     public function getAttachment(int $attachmentId): AttachmentData
@@ -215,7 +240,7 @@ class WPConnector implements WPConnectorInterface
         return AttachmentData::fromArray($result);
     }
 
-    public function addTag(string $tagName, string $tagSlug): int
+    public function addTag(string $tagName, string $tagSlug): TagData
     {
         $params = [
             'tag_name' => $tagName,
@@ -224,7 +249,7 @@ class WPConnector implements WPConnectorInterface
 
         $result = $this->makeRequest('add_tag', $params, 'data', 'POST');
 
-        return $result['tag_id'];
+        return TagData::fromArray($result);
     }
 
     public function addCategory(string $slug, string $name): int
@@ -327,6 +352,17 @@ class WPConnector implements WPConnectorInterface
             'category_id' => $categoryId,
         ];
         $result = $this->makeRequest('set_post_category', $params, 'data', 'POST');
+
+        return intval($result['post_id']);
+    }
+
+    public function setPostAuthor(int $postId, string $author): int
+    {
+        $params = [
+            'post_id' => $postId,
+            'author_slug' => $author,
+        ];
+        $result = $this->makeRequest('set_post_author', $params, 'data', 'POST');
 
         return intval($result['post_id']);
     }
