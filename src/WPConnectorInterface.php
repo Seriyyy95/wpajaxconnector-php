@@ -8,7 +8,7 @@ use WPAjaxConnector\WPAjaxConnectorPHP\Enum\TaxonomyType;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\AttachmentData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\FullPostData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\PostData;
-use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TagData;
+use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TermData;
 
 interface WPConnectorInterface
 {
@@ -48,9 +48,9 @@ interface WPConnectorInterface
 
     public function addPost(string $postTitle, string $postContent): PostData;
 
-    public function addCategory(string $categoryName, string $categorySlug): int;
+    public function addCategory(string $categoryName, string $categorySlug): TermData;
 
-    public function addTag(string $tagName, string $tagSlug): TagData;
+    public function addTag(string $tagName, string $tagSlug): TermData;
 
     public function setPostParent(int $postId, int $parentId): int;
 
@@ -69,5 +69,7 @@ interface WPConnectorInterface
     public function setPostTags(int $postId, array $tagIds): int;
 
     public function setTermName(int $termId, TaxonomyType $type, string $name): int;
+
+    public function setTermDescription(int $termId, TaxonomyType $type, string $description): int;
     public function setTermSlug(int $termId, TaxonomyType $type, string $slug): int;
 }

@@ -13,8 +13,8 @@ use WPAjaxConnector\WPAjaxConnectorPHP\Enum\TaxonomyType;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\AttachmentData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\FullPostData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\PostData;
-use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TagData;
 use WPAjaxConnector\WPAjaxConnectorPHP\Objects\TermData;
+use WPAjaxConnector\WPAjaxConnectorPHP\Objects\FullTermData;
 
 class WPConnector implements WPConnectorInterface
 {
@@ -159,7 +159,7 @@ class WPConnector implements WPConnectorInterface
         return AttachmentData::fromArray($result);
     }
 
-    public function getTermData(int $termId): TermData
+    public function getTermData(int $termId): FullTermData
     {
         $params = [
             'term_id' => $termId,
@@ -167,7 +167,7 @@ class WPConnector implements WPConnectorInterface
 
         $result = $this->makeRequest('get_term_data', $params);
 
-        return TermData::fromArray($result);
+        return FullTermData::fromArray($result);
     }
 
     public function getAttachment(int $attachmentId): AttachmentData
@@ -240,7 +240,7 @@ class WPConnector implements WPConnectorInterface
         return AttachmentData::fromArray($result);
     }
 
-    public function addTag(string $tagName, string $tagSlug): TagData
+    public function addTag(string $tagName, string $tagSlug): TermData
     {
         $params = [
             'tag_name' => $tagName,
@@ -249,10 +249,10 @@ class WPConnector implements WPConnectorInterface
 
         $result = $this->makeRequest('add_tag', $params, 'data', 'POST');
 
-        return TagData::fromArray($result);
+        return TermData::fromArrayForTag($result);
     }
 
-    public function addCategory(string $slug, string $name): int
+    public function addCategory(string $slug, string $name): TermData
     {
         $params = [
             'category_name' => $name,
@@ -261,7 +261,7 @@ class WPConnector implements WPConnectorInterface
 
         $result = $this->makeRequest('add_category', $params, 'data', 'POST');
 
-        return $result['category_id'];
+        return TermData::fromArrayForCategory($result);
     }
 
     public function updateAttachment(string $imageName, string $imageData, int $attachmentId): AttachmentData
@@ -423,6 +423,19 @@ class WPConnector implements WPConnectorInterface
         ];
 
         $result = $this->makeRequest('set_term_slug', $params);
+
+        return intval($result['term_id']);
+    }
+
+    public function setTermDescription(int $termId, TaxonomyType $type, string $description): int
+    {
+        $params = [
+            'term_id' => $termId,
+            'taxonomy' => $type->value,
+            'description' => $description,
+        ];
+
+        $result = $this->makeRequest('set_term_description', $params);
 
         return intval($result['term_id']);
     }
