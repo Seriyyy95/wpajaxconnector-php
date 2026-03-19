@@ -28,7 +28,7 @@ interface WPConnectorInterface
 
     public function setTermTranslation(int $termId, string $code, int $translationId, TaxonomyType $type): void;
 
-    public function getPostThumbnail(int $postId): AttachmentData;
+    public function getPostThumbnail(int $postId): ?AttachmentData;
 
     public function getAttachment(int $attachmentId): AttachmentData;
 
@@ -46,7 +46,7 @@ interface WPConnectorInterface
 
     public function deleteAttachment(int $attachmentId): bool;
 
-    public function addPost(string $postTitle, string $postContent): PostData;
+    public function addPost(string $postTitle, string $postContent, ?string $postType): PostData;
 
     public function addCategory(string $categoryName, string $categorySlug): TermData;
 

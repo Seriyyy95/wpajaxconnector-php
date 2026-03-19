@@ -148,7 +148,7 @@ class WPConnector implements WPConnectorInterface
         $this->makeRequest('set_term_translation', $params, 'success');
     }
 
-    public function getPostThumbnail(int $postId): AttachmentData
+    public function getPostThumbnail(int $postId): ?AttachmentData
     {
         $params = [
             'post_id' => $postId,
@@ -252,11 +252,11 @@ class WPConnector implements WPConnectorInterface
         return TermData::fromArrayForTag($result);
     }
 
-    public function addCategory(string $slug, string $name): TermData
+    public function addCategory(string $categoryName, string $categorySlug): TermData
     {
         $params = [
-            'category_name' => $name,
-            'category_slug' => $slug,
+            'category_name' => $categoryName,
+            'category_slug' => $categorySlug,
         ];
 
         $result = $this->makeRequest('add_category', $params, 'data', 'POST');
@@ -293,12 +293,16 @@ class WPConnector implements WPConnectorInterface
 
     }
 
-    public function addPost(string $postTitle, string $postContent): PostData
+    public function addPost(string $postTitle, string $postContent, ?string $postType = null): PostData
     {
         $params = [
             'post_title' => $postTitle,
             'post_content' => $postContent,
         ];
+
+        if (null !== $postType) {
+            $params['post_type'] = $postType;
+        }
 
         $result = $this->makeRequest('add_post', $params, 'data', 'POST');
 
